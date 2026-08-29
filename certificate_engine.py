@@ -67,21 +67,26 @@ def get_font_path(prefer_bold: bool = False, weight: str = "auto") -> str:
             return p
     return "arial.ttf"
 
-def detect_columns(df: pd.DataFrame) -> Tuple[Optional[str], Optional[str], Optional[str], Optional[str]]:
-    """Automatically find the Name, Year, Department/Section, and optional ID columns in a dataframe."""
+def detect_columns(df: pd.DataFrame) -> Tuple[Optional[str], Optional[str], Optional[str], Optional[str], Optional[str]]:
+    """Automatically find the Name, Year, Department/Section, optional ID, and Email columns in a dataframe."""
     name_col = None
     year_col = None
     dept_col = None
     id_col = None
+    email_col = None
     
     name_keywords = ["name", "participant", "student", "candidate", "full name", "attendee"]
     year_keywords = ["year", "yr", "academic year", "class year", "batch", "sem", "semester"]
     dept_keywords = ["department", "dept", "section", "branch", "stream", "course", "major"]
     id_keywords = ["cert_id", "certificate_id", "id", "serial_no", "serial", "reg_no", "roll_no", "verification_id"]
+    email_keywords = ["email", "mail", "email_id", "email id", "email address", "e-mail", "personal_email", "student_email"]
 
     cols = list(df.columns)
     for c in cols:
         clow = str(c).strip().lower()
+        if not email_col and any(k == clow or k in clow for k in email_keywords):
+            email_col = c
+            continue
         if not id_col and any(k == clow or k in clow for k in id_keywords):
             id_col = c
             continue
@@ -93,13 +98,13 @@ def detect_columns(df: pd.DataFrame) -> Tuple[Optional[str], Optional[str], Opti
             continue
         if not dept_col and any(k == clow or k in clow for k in dept_keywords):
             dept_col = c
+            continue
 
     # Fallbacks based on column position if not detected by keywords
-    unassigned = [c for c in cols if c not in (name_col, year_col, dept_col, id_col)]
+    unassigned = [c for c in cols if c not in (name_col, year_col, dept_col, id_col, email_col)]
     if not name_col and unassigned:
         name_col = unassigned.pop(0)
     
-    # If we have remaining unassigned columns
     if len(cols) >= 3:
         if not year_col and unassigned:
             year_col = unassigned.pop(0)
@@ -109,24 +114,26 @@ def detect_columns(df: pd.DataFrame) -> Tuple[Optional[str], Optional[str], Opti
         if not dept_col and not year_col and unassigned:
             dept_col = unassigned.pop(0)
 
-    return name_col, year_col, dept_col, id_col
+    return name_col, year_col, dept_col, id_col, email_col
 
 def parse_records_from_dataframe(df: pd.DataFrame) -> List[Dict[str, str]]:
-    """Converts DataFrame to a list of dicts with 'name', 'year', 'department', and optional 'cert_id'."""
-    name_col, year_col, dept_col, id_col = detect_columns(df)
+    """Converts DataFrame to a list of dicts with 'name', 'year', 'department', optional 'cert_id', and 'email'."""
+    name_col, year_col, dept_col, id_col, email_col = detect_columns(df)
     records = []
     for _, row in df.iterrows():
         name = str(row[name_col]).strip() if name_col and pd.notna(row[name_col]) else ""
         year = str(row[year_col]).strip() if year_col and pd.notna(row[year_col]) else ""
         dept = str(row[dept_col]).strip() if dept_col and pd.notna(row[dept_col]) else ""
         cid = str(row[id_col]).strip() if id_col and pd.notna(row[id_col]) else ""
+        email = str(row[email_col]).strip() if email_col and pd.notna(row[email_col]) else ""
         
         if name and name.lower() not in ("nan", "none"):
             records.append({
                 "name": name,
                 "year": "" if year.lower() in ("nan", "none") else year,
                 "department": "" if dept.lower() in ("nan", "none") else dept,
-                "cert_id": "" if cid.lower() in ("nan", "none") else cid
+                "cert_id": "" if cid.lower() in ("nan", "none") else cid,
+                "email": "" if email.lower() in ("nan", "none") else email
             })
     return records
 
@@ -451,6 +458,22 @@ class CertificateGenerator:
                 pdf_file = out_path / f"{safe_name}.pdf"
                 self.generate_single_pdf(cert_img, str(pdf_file))
                 generated_pdfs.append(str(pdf_file))
+
+            # Automatically log to registry
+            try:
+                from registry import log_certificate_record
+                log_certificate_record(
+                    cert_id=cid or f"CERT-{i+1}",
+                    name=name,
+                    year=year,
+                    department=dept,
+                    email=rec.get("email", ""),
+                    delivery_status="Generated",
+                    pdf_path=str(out_path / f"{safe_name}.pdf") if export_pdf else "",
+                    png_path=str(out_path / f"{safe_name}.png") if export_png else ""
+                )
+            except Exception as log_err:
+                print(f"Registry log warning: {log_err}")
 
             if merged_pdf_name:
                 generated_images.append(cert_img)

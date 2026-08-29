@@ -294,6 +294,55 @@ with st.expander("✉️ Send Sample or Bulk Emails via Gmail", expanded=True):
                     st.success(f"🎉 Certificate email successfully delivered to **{r_email}**!")
                 except Exception as ex:
                     st.error(f"❌ Failed to send email: {ex}")
+
+    # Bulk Email Dispatch Button (if records loaded have emails)
+    records_with_email = [r for r in records if r.get("email") and "@" in r.get("email")]
+    if records_with_email:
+        st.markdown(f"**Found {len(records_with_email)} participants with valid email addresses in the current dataset.**")
+        if st.button(f"🚀 Send Certificates to All {len(records_with_email)} Participants", type="secondary"):
+            if not s_pass.strip():
+                st.error("⚠️ Please enter your 16-character Google App Password first.")
+            else:
+                from send_email import send_bulk_certificates
+                mail_progress = st.progress(0.0)
+                mail_status = st.empty()
+                
+                def update_mail_progress(curr, tot):
+                    mail_progress.progress(curr / tot)
+                    mail_status.text(f"Sending email {curr} of {tot}...")
+
+                with st.spinner("Dispatching bulk certificate emails..."):
+                    res = send_bulk_certificates(
+                        records=records_with_email,
+                        sender_email=s_email.strip(),
+                        sender_password=s_pass.strip(),
+                        generator=generator,
+                        progress_callback=update_mail_progress
+                    )
+                mail_status.empty()
+                mail_progress.progress(1.0)
+                st.balloons()
+                st.success(f"✅ Finished sending! Delivered: {res['sent']}, Failed: {res['failed']}")
 else:
     st.info("👆 Please upload a CSV/Excel file, paste participants, or click 'Load Sample Dataset' to get started.")
+
+# ==========================================
+# 📊 Issued Certificates Registry & Audit Log
+# ==========================================
+st.divider()
+st.subheader("📊 Issued Certificates Registry & Audit Log")
+with st.expander("📁 View Issued Records Ledger & Download Audit Log", expanded=True):
+    from registry import get_registry_dataframe
+    reg_df = get_registry_dataframe()
+    if not reg_df.empty:
+        st.dataframe(reg_df, use_container_width=True)
+        csv_bytes = reg_df.to_csv(index=False).encode("utf-8")
+        st.download_button(
+            "⬇️ Download Registry Log (CSV)",
+            data=csv_bytes,
+            file_name="certificates_registry_log.csv",
+            mime="text/csv"
+        )
+    else:
+        st.info("No certificates logged yet. Once you generate or send certificates, they will appear here automatically.")
 

@@ -1,0 +1,35 @@
+[
+  {
+    "Certificate_ID": "GSA-FMC-2026-001",
+    "Student_Name": "Aarav Sharma",
+    "Year": "III Year",
+    "Department": "Department of AI & DS",
+    "Email": "aarav.sample@example.com",
+    "Issued_Timestamp": "2026-08-29 18:17:04",
+    "Delivery_Status": "Generated",
+    "PDF_File": "test_output\\Aarav_Sharma_III_Year_Department_of_AI_&_DS.pdf",
+    "PNG_File": "test_output\\Aarav_Sharma_III_Year_Department_of_AI_&_DS.png"
+  },
+  {
+    "Certificate_ID": "GSA-FMC-2026-002",
+    "Student_Name": "Priya Ramesh",
+    "Year": "IV Year",
+    "Department": "Computer Science and Engineering",
+    "Email": "priya.sample@example.com",
+    "Issued_Timestamp": "2026-08-29 18:17:04",
+    "Delivery_Status": "Generated",
+    "PDF_File": "test_output\\Priya_Ramesh_IV_Year_Computer_Science_and_Engineering.pdf",
+    "PNG_File": "test_output\\Priya_Ramesh_IV_Year_Computer_Science_and_Engineering.png"
+  },
+  {
+    "Certificate_ID": "GSA-FMC-2026-003",
+    "Student_Name": "Karthik Raja S",
+    "Year": "II Year",
+    "Department": "Information Technology",
+    "Email": "karthik.sample@example.com",
+    "Issued_Timestamp": "2026-08-29 18:17:04",
+    "Delivery_Status": "Generated",
+    "PDF_File": "test_output\\Karthik_Raja_S_II_Year_Information_Technology.pdf",
+    "PNG_File": "test_output\\Karthik_Raja_S_II_Year_Information_Technology.png"
+  }
+]
