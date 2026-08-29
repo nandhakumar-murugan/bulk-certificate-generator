@@ -101,3 +101,4 @@ def get_record_by_id(cert_id: str) -> Optional[Dict]:
         if not match.empty:
             return match.iloc[0].to_dict()
     return None
+
