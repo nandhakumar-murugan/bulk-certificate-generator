@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Share Certificate on LinkedIn — Fund My Crazy</title>
+  
+  <!-- Open Graph metadata so LinkedIn shows certificate card -->
+  <meta property="og:title" content="Certificate of Participation — Fund My Crazy: Build Night with Gemini" />
+  <meta property="og:description" content="Organized by Google Student Ambassador Community × School of Innovation (SOI) & Department of AI & DS, KGiSL Institute of Technology." />
+  <meta property="og:image" content="https://raw.githubusercontent.com/nandhakumar-murugan/bulk-certificate-generator/main/template_cleaned.png" />
+  <meta property="og:type" content="article" />
+
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: #f1f3f4;
+      color: #202124;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+    .card {
+      background: #ffffff;
+      border: 1px solid #dadce0;
+      border-radius: 16px;
+      padding: 32px;
+      max-width: 540px;
+      width: 100%;
+      box-shadow: 0 4px 16px rgba(60,64,67,0.12);
+      text-align: center;
+    }
+    .badge {
+      display: inline-block;
+      padding: 4px 12px;
+      background-color: #e8f0fe;
+      color: #1a73e8;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+    h1 {
+      font-size: 20px;
+      margin: 0 0 12px 0;
+      color: #202124;
+    }
+    .status-box {
+      background-color: #e6f4ea;
+      border: 1px solid #ceead6;
+      border-radius: 8px;
+      padding: 16px;
+      margin: 20px 0;
+      color: #137333;
+      font-size: 15px;
+      font-weight: 600;
+      line-height: 1.5;
+    }
+    .caption-preview {
+      background-color: #f8f9fa;
+      border: 1px solid #e8eaed;
+      border-radius: 8px;
+      padding: 14px;
+      font-size: 12px;
+      color: #3c4043;
+      text-align: left;
+      line-height: 1.5;
+      font-family: monospace;
+      max-height: 160px;
+      overflow-y: auto;
+      margin-bottom: 20px;
+      user-select: all;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 12px 24px;
+      background-color: #0a66c2;
+      color: #ffffff;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 600;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      width: 100%;
+      box-sizing: border-box;
+      transition: background-color 0.2s;
+    }
+    .btn:hover {
+      background-color: #084e96;
+    }
+    .tip {
+      font-size: 12px;
+      color: #70757a;
+      margin-top: 14px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="card">
+    <div class="badge">LinkedIn Post Assistant</div>
+    <h1>Sharing to LinkedIn</h1>
+
+    <div id="statusBox" class="status-box">
+      📋 Copying post caption to your clipboard...
+    </div>
+
+    <div class="caption-preview" id="captionText">🚀 Excited to share that I participated in the "Fund My Crazy: Build Night with Gemini" challenge!
+
+Organized by the Google Student Ambassador Community in joint collaboration with the School of Innovation (SOI) and Department of AI & DS at KGiSL Institute of Technology, this hands-on build sprint was an incredible opportunity to prototype future smart city infrastructure solutions using Google Gemini and Nano Banana.
+
+💡 Project Theme: Smart City Infrastructure & Generative AI
+🛠️ Concept: Rapid multimodal prototyping using Gemini Advanced and Nano Banana
+
+A huge thank you to Nandhakumar M (Google Student Ambassador | #TeamGemini), Er. Sathish Ramanujam, and Dr. Senathipathi Kannusamy for organizing and mentoring this session!
+
+#GoogleStudentAmbassador #TeamGemini #GoogleAI #GenerativeAI #Gemini #BuildNight #KGiSL #SchoolOfInnovation #AIandDS #TechInnovation</div>
+
+    <button class="btn" id="actionBtn" onclick="manualCopyAndOpen()">
+      📋 Copy Caption & Open LinkedIn Now ↗
+    </button>
+
+    <div class="tip">
+      💡 <strong>Tip:</strong> Once LinkedIn opens, simply press <strong>Ctrl + V</strong> (or Paste) and attach your certificate image!
+    </div>
+  </div>
+
+  <script>
+    const caption = document.getElementById("captionText").innerText;
+
+    async function autoCopyAndRedirect() {
+      try {
+        await navigator.clipboard.writeText(caption);
+        document.getElementById("statusBox").innerHTML = "✅ <strong>Caption & Mentions Copied to Clipboard!</strong><br><span style='font-size:13px; font-weight: normal; color: #1e4620;'>Opening LinkedIn composer in 2 seconds... (Just press <b>Ctrl+V</b> to paste!)</span>";
+        setTimeout(() => {
+          window.location.href = "https://www.linkedin.com/feed/?shareActive=true";
+        }, 2000);
+      } catch (err) {
+        document.getElementById("statusBox").innerHTML = "👇 Click the button below to copy the caption and open LinkedIn:";
+        document.getElementById("statusBox").style.backgroundColor = "#feefe3";
+        document.getElementById("statusBox").style.color = "#b06000";
+        document.getElementById("statusBox").style.borderColor = "#fcdad0";
+      }
+    }
+
+    function manualCopyAndOpen() {
+      navigator.clipboard.writeText(caption).then(() => {
+        document.getElementById("actionBtn").innerText = "✅ Copied! Opening LinkedIn...";
+        window.open("https://www.linkedin.com/feed/?shareActive=true", "_blank");
+      });
+    }
+
+    // Try automatic copy on page load
+    window.addEventListener("load", () => {
+      // Delay slightly for browser clipboard permissions
+      setTimeout(autoCopyAndRedirect, 500);
+    });
+  </script>
+
+</body>
+</html>
+
