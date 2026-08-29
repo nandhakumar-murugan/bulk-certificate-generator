@@ -67,6 +67,33 @@ def run_tests():
     assert long_img_path.exists()
     print("  -> Passed! Long name scaled and rendered.")
 
+    print("Test 6: Testing bundled Google Sans font fidelity...")
+    from certificate_engine import get_font_path, FONT_GOOGLE_SANS_BOLD, FONT_GOOGLE_SANS_REGULAR
+    bold_path = get_font_path(prefer_bold=True)
+    reg_path = get_font_path(prefer_bold=False)
+    assert "GoogleSans-Bold.ttf" in bold_path, f"Expected GoogleSans-Bold, got {bold_path}"
+    assert "GoogleSans-Regular.ttf" in reg_path, f"Expected GoogleSans-Regular, got {reg_path}"
+    print(f"  -> Passed! Bundled fonts loaded: {bold_path}")
+
+    print("Test 7: Testing Unique Verification ID (Sequential & Hash)...")
+    from certificate_engine import generate_cert_id
+    sample_rec = {"name": "Aarav Sharma", "year": "III Year", "department": "AI & DS"}
+    seq_id = generate_cert_id(sample_rec, 1, prefix="GSA-FMC-2026-", mode="sequential")
+    hash_id = generate_cert_id(sample_rec, 1, prefix="GSA-FMC-2026-", mode="hash")
+    assert seq_id == "GSA-FMC-2026-001", f"Unexpected sequential ID: {seq_id}"
+    assert hash_id.startswith("GSA-FMC-2026-") and len(hash_id) == len("GSA-FMC-2026-") + 8, f"Unexpected hash ID: {hash_id}"
+    
+    cert_with_id = gen.render_certificate(
+        name=sample_rec["name"],
+        department=sample_rec["department"],
+        year=sample_rec["year"],
+        cert_id=seq_id
+    )
+    cert_id_path = Path(output_dir) / "cert_with_id.png"
+    cert_with_id.save(str(cert_id_path))
+    assert cert_id_path.exists()
+    print(f"  -> Passed! Sequential: {seq_id}, Hash: {hash_id}")
+
     print("\nALL TESTS PASSED SUCCESSFULLY!")
 
 if __name__ == "__main__":

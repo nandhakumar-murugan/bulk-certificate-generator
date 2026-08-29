@@ -18,6 +18,12 @@ An automated bulk certificate generator tailored to produce personalized certifi
   - Instant download buttons for individual PNGs/PDFs (ZIP archive) and a merged multi-page PDF.
 - **Command-Line Interface (CLI)**:
   - Fast script for terminal automation and batch operations.
+- **Bundled Google Sans Typography**:
+  - Official **Google Sans** (`GoogleSans-Bold.ttf`, `GoogleSans-Medium.ttf`, `GoogleSans-Regular.ttf`) bundled directly in `assets/fonts/`.
+  - 100% font fidelity across Windows, Linux (Streamlit Cloud / Docker), and macOS without relying on local system fonts.
+- **Unique Credential Verification ID**:
+  - Automatically appends a unique certificate serial or hash ID at the bottom margin (e.g. `Certificate ID: GSA-FMC-2026-001`).
+  - Supports sequential numbering or tamper-proof 8-character SHA256 hashes.
 - **Automatic Text Scaling**:
   - Automatically scales down font size for long names or department titles so they never overflow the certificate guidelines.
 
@@ -36,14 +42,17 @@ This opens your browser at `http://localhost:8501`.
 To batch generate certificates directly from the terminal:
 
 ```powershell
-# Generate PNG certificates from sample CSV
+# Generate PNG certificates with default Google Sans Bold & Verification ID
 python generate.py --input participants_sample.csv
 
 # Generate both PNG and PDF, plus a single combined multi-page PDF
 python generate.py --input participants_sample.xlsx --format both --merge-pdf all_certificates.pdf
 
-# Customize font size or make text bold
-python generate.py --input participants_sample.csv --font-size 26 --bold
+# Customize Verification ID prefix or use tamper-proof hash IDs
+python generate.py --input participants_sample.csv --id-prefix "GSA-FMC-2026-" --id-mode hash
+
+# Disable verification ID
+python generate.py --input participants_sample.csv --no-id
 ```
 
 ---

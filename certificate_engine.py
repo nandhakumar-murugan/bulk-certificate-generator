@@ -1,6 +1,7 @@
 import os
 import io
 import re
+import hashlib
 from pathlib import Path
 from typing import List, Dict, Tuple, Optional, Union
 from PIL import Image, ImageDraw, ImageFont
@@ -16,8 +17,14 @@ UNDERLINE_X_END = 858
 TEMPLATE_WIDTH = 1180
 TEMPLATE_HEIGHT = 850
 
+# Bundled official Google Sans fonts in the repository
+ASSETS_FONT_DIR = Path(__file__).parent / "assets" / "fonts"
+FONT_GOOGLE_SANS_BOLD = str(ASSETS_FONT_DIR / "GoogleSans-Bold.ttf")
+FONT_GOOGLE_SANS_MEDIUM = str(ASSETS_FONT_DIR / "GoogleSans-Medium.ttf")
+FONT_GOOGLE_SANS_REGULAR = str(ASSETS_FONT_DIR / "GoogleSans-Regular.ttf")
+
 # Fallback fonts on Windows
-FONT_CANDIDATES = [
+SYSTEM_FONT_CANDIDATES = [
     r"C:\Windows\Fonts\segoeui.ttf",
     r"C:\Windows\Fonts\segoeuib.ttf",
     r"C:\Windows\Fonts\arial.ttf",
@@ -26,8 +33,26 @@ FONT_CANDIDATES = [
     r"C:\Windows\Fonts\calibrib.ttf",
 ]
 
-def get_font_path(prefer_bold: bool = False) -> str:
-    """Find the best available font on the system."""
+def get_font_path(prefer_bold: bool = False, weight: str = "auto") -> str:
+    """Find the best available font, prioritizing bundled Google Sans for 100% fidelity."""
+    # 1. Bundled Google Sans fonts (primary)
+    if weight == "bold" or (weight == "auto" and prefer_bold):
+        if os.path.exists(FONT_GOOGLE_SANS_BOLD):
+            return FONT_GOOGLE_SANS_BOLD
+    elif weight == "medium":
+        if os.path.exists(FONT_GOOGLE_SANS_MEDIUM):
+            return FONT_GOOGLE_SANS_MEDIUM
+    elif weight == "regular" or (weight == "auto" and not prefer_bold):
+        if os.path.exists(FONT_GOOGLE_SANS_REGULAR):
+            return FONT_GOOGLE_SANS_REGULAR
+
+    # Fallback among bundled
+    if os.path.exists(FONT_GOOGLE_SANS_BOLD) and prefer_bold:
+        return FONT_GOOGLE_SANS_BOLD
+    if os.path.exists(FONT_GOOGLE_SANS_REGULAR):
+        return FONT_GOOGLE_SANS_REGULAR
+
+    # 2. System fallbacks
     if prefer_bold:
         bolds = [
             r"C:\Windows\Fonts\segoeuib.ttf",
@@ -37,24 +62,29 @@ def get_font_path(prefer_bold: bool = False) -> str:
         for p in bolds:
             if os.path.exists(p):
                 return p
-    for p in FONT_CANDIDATES:
+    for p in SYSTEM_FONT_CANDIDATES:
         if os.path.exists(p):
             return p
     return "arial.ttf"
 
-def detect_columns(df: pd.DataFrame) -> Tuple[Optional[str], Optional[str], Optional[str]]:
-    """Automatically find the Name, Year, and Department/Section columns in a dataframe."""
+def detect_columns(df: pd.DataFrame) -> Tuple[Optional[str], Optional[str], Optional[str], Optional[str]]:
+    """Automatically find the Name, Year, Department/Section, and optional ID columns in a dataframe."""
     name_col = None
     year_col = None
     dept_col = None
+    id_col = None
     
     name_keywords = ["name", "participant", "student", "candidate", "full name", "attendee"]
     year_keywords = ["year", "yr", "academic year", "class year", "batch", "sem", "semester"]
     dept_keywords = ["department", "dept", "section", "branch", "stream", "course", "major"]
+    id_keywords = ["cert_id", "certificate_id", "id", "serial_no", "serial", "reg_no", "roll_no", "verification_id"]
 
     cols = list(df.columns)
     for c in cols:
         clow = str(c).strip().lower()
+        if not id_col and any(k == clow or k in clow for k in id_keywords):
+            id_col = c
+            continue
         if not name_col and any(k == clow or k in clow for k in name_keywords):
             name_col = c
             continue
@@ -65,7 +95,7 @@ def detect_columns(df: pd.DataFrame) -> Tuple[Optional[str], Optional[str], Opti
             dept_col = c
 
     # Fallbacks based on column position if not detected by keywords
-    unassigned = [c for c in cols if c not in (name_col, year_col, dept_col)]
+    unassigned = [c for c in cols if c not in (name_col, year_col, dept_col, id_col)]
     if not name_col and unassigned:
         name_col = unassigned.pop(0)
     
@@ -79,24 +109,50 @@ def detect_columns(df: pd.DataFrame) -> Tuple[Optional[str], Optional[str], Opti
         if not dept_col and not year_col and unassigned:
             dept_col = unassigned.pop(0)
 
-    return name_col, year_col, dept_col
+    return name_col, year_col, dept_col, id_col
 
 def parse_records_from_dataframe(df: pd.DataFrame) -> List[Dict[str, str]]:
-    """Converts DataFrame to a list of dicts with 'name', 'year', and 'department'."""
-    name_col, year_col, dept_col = detect_columns(df)
+    """Converts DataFrame to a list of dicts with 'name', 'year', 'department', and optional 'cert_id'."""
+    name_col, year_col, dept_col, id_col = detect_columns(df)
     records = []
     for _, row in df.iterrows():
         name = str(row[name_col]).strip() if name_col and pd.notna(row[name_col]) else ""
         year = str(row[year_col]).strip() if year_col and pd.notna(row[year_col]) else ""
         dept = str(row[dept_col]).strip() if dept_col and pd.notna(row[dept_col]) else ""
+        cid = str(row[id_col]).strip() if id_col and pd.notna(row[id_col]) else ""
         
         if name and name.lower() not in ("nan", "none"):
             records.append({
                 "name": name,
                 "year": "" if year.lower() in ("nan", "none") else year,
-                "department": "" if dept.lower() in ("nan", "none") else dept
+                "department": "" if dept.lower() in ("nan", "none") else dept,
+                "cert_id": "" if cid.lower() in ("nan", "none") else cid
             })
     return records
+
+def generate_cert_id(
+    record: Dict[str, str],
+    index: int,
+    prefix: str = "GSA-FMC-2026-",
+    mode: str = "sequential"
+) -> str:
+    """
+    Generates a unique verification ID.
+    If record already contains an explicit 'cert_id', uses that.
+    Otherwise generates sequential (e.g. GSA-FMC-2026-001) or hash-based (e.g. GSA-FMC-2026-8A3D1E).
+    """
+    explicit = record.get("cert_id") or record.get("id") or record.get("certificate_id") or ""
+    if explicit and explicit.strip() and explicit.lower() not in ("nan", "none", "-"):
+        return explicit.strip()
+    
+    if mode == "hash":
+        name = record.get("name", "")
+        yr = record.get("year", "")
+        dept = record.get("department", "")
+        h = hashlib.sha256(f"{name}:{yr}:{dept}:{index}".encode("utf-8")).hexdigest()[:8].upper()
+        return f"{prefix}{h}"
+    else:
+        return f"{prefix}{index:03d}"
 
 def parse_records_from_file(file_path_or_buffer) -> List[Dict[str, str]]:
     """Loads CSV or Excel from file path or file-like object and extracts participant records."""
@@ -271,10 +327,11 @@ class CertificateGenerator:
         name: str,
         department: str = "",
         year: str = "",
+        cert_id: Optional[str] = None,
         font_size: int = 24,
-        prefer_bold: bool = False,
+        prefer_bold: bool = True,
         font_path: Optional[str] = None,
-        text_color: Tuple[int, int, int] = (30, 30, 30),
+        text_color: Tuple[int, int, int] = (32, 33, 36),
         y_offset: int = 0,
         custom_format: str = "{name} of {year}, {department}",
         max_width: int = 650
@@ -282,6 +339,7 @@ class CertificateGenerator:
         """
         Renders a single personalized certificate image.
         Auto-shrinks font size if text exceeds max_width to keep it properly framed.
+        Optionally renders a subtle unique verification ID centered at the bottom margin.
         """
         img = self._base_template.copy()
         draw = ImageDraw.Draw(img)
@@ -311,6 +369,17 @@ class CertificateGenerator:
         text_y = (UNDERLINE_Y - text_h - 14) + y_offset
 
         draw.text((text_x, text_y), full_text, font=font, fill=text_color)
+
+        # Render Verification / Certificate ID at the bottom margin
+        if cert_id:
+            id_font_path = get_font_path(prefer_bold=False, weight="regular")
+            id_font = self._get_font(id_font_path, 12)
+            id_text = f"Certificate ID: {cert_id}" if not str(cert_id).lower().startswith("cert") and not str(cert_id).lower().startswith("id:") else str(cert_id)
+            id_bbox = draw.textbbox((0, 0), id_text, font=id_font)
+            id_w = id_bbox[2] - id_bbox[0]
+            # Center at bottom margin (y=804), above the bottom border
+            draw.text((TEMPLATE_WIDTH // 2 - id_w // 2, 804), id_text, font=id_font, fill=(100, 105, 115))
+
         return img
 
     def generate_single_pdf(
@@ -329,8 +398,11 @@ class CertificateGenerator:
         export_png: bool = True,
         export_pdf: bool = False,
         merged_pdf_name: Optional[str] = None,
+        enable_id: bool = True,
+        id_prefix: str = "GSA-FMC-2026-",
+        id_mode: str = "sequential",
         font_size: int = 24,
-        prefer_bold: bool = False,
+        prefer_bold: bool = True,
         custom_format: str = "{name} of {year}, {department}",
         progress_callback = None
     ) -> Dict[str, any]:
@@ -358,10 +430,13 @@ class CertificateGenerator:
             if not safe_name:
                 safe_name = f"certificate_{i+1}"
 
+            cid = generate_cert_id(rec, i + 1, prefix=id_prefix, mode=id_mode) if enable_id else None
+
             cert_img = self.render_certificate(
                 name=name,
                 department=dept,
                 year=year,
+                cert_id=cid,
                 font_size=font_size,
                 prefer_bold=prefer_bold,
                 custom_format=custom_format

@@ -9,6 +9,7 @@ from certificate_engine import (
     parse_records_from_dataframe,
     parse_records_from_file,
     parse_records_from_text,
+    generate_cert_id,
     detect_columns,
     DEFAULT_TEMPLATE,
     CLEAN_TEMPLATE
@@ -50,8 +51,8 @@ st.markdown('<div class="sub-header">Fund My Crazy: Build Night Edition • Goog
 with st.sidebar:
     st.header("⚙️ Typography & Layout")
     font_size = st.slider("Font Size", min_value=16, max_value=36, value=24, step=1)
-    font_weight = st.selectbox("Font Weight", ["Regular", "Bold"], index=0)
-    prefer_bold = (font_weight == "Bold")
+    font_weight = st.selectbox("Font Weight", ["Bold (Google Sans)", "Regular (Google Sans)"], index=0)
+    prefer_bold = ("Bold" in font_weight)
     y_offset = st.slider("Vertical Offset (px)", min_value=-20, max_value=20, value=0, step=1,
                          help="Adjust text position up (-) or down (+) relative to the underline.")
     
@@ -60,6 +61,17 @@ with st.sidebar:
         value="{name} of {year}, {department}",
         help="Use {name}, {year}, and {department}. If year or department is omitted in data, it adapts automatically."
     )
+
+    st.divider()
+    st.header("🆔 Verification ID")
+    enable_id = st.checkbox("Append Unique Certificate ID", value=True, help="Renders a unique ID at the bottom margin.")
+    if enable_id:
+        id_prefix = st.text_input("ID Prefix", value="GSA-FMC-2026-")
+        id_style = st.selectbox("ID Format", ["Sequential (001)", "Tamper-Proof Hash"], index=0)
+        id_mode = "hash" if "Hash" in id_style else "sequential"
+    else:
+        id_prefix = "GSA-FMC-2026-"
+        id_mode = "sequential"
     
     st.divider()
     st.header("📦 Output Formats")
@@ -133,10 +145,13 @@ if records:
         selected_idx = st.selectbox("Select participant to preview:", range(len(records)), format_func=lambda i: preview_names[i])
         
         selected_rec = records[selected_idx]
+        preview_cid = generate_cert_id(selected_rec, selected_idx + 1, prefix=id_prefix, mode=id_mode) if enable_id else None
+
         preview_img = generator.render_certificate(
             name=selected_rec["name"],
             department=selected_rec.get("department", ""),
             year=selected_rec.get("year", ""),
+            cert_id=preview_cid,
             font_size=font_size,
             prefer_bold=prefer_bold,
             y_offset=y_offset,
@@ -150,6 +165,8 @@ if records:
             custom_format=custom_format
         )
         st.markdown(f"**Rendered Text:** `{formatted_preview_text}`")
+        if preview_cid:
+            st.markdown(f"**Verification ID:** `{preview_cid}`")
         st.caption("Tip: Use the sidebar controls to adjust size, weight, and vertical position.")
         
     with col_prev_view:
@@ -175,6 +192,9 @@ if records:
             export_png=export_png,
             export_pdf=export_pdf,
             merged_pdf_name=merged_pdf_name,
+            enable_id=enable_id,
+            id_prefix=id_prefix,
+            id_mode=id_mode,
             font_size=font_size,
             prefer_bold=prefer_bold,
             custom_format=custom_format,

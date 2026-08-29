@@ -47,7 +47,29 @@ def main():
     parser.add_argument(
         "--bold",
         action="store_true",
-        help="Use bold weight for the participant name/department."
+        default=True,
+        help="Use Google Sans Bold weight for the participant line (default: True)."
+    )
+    parser.add_argument(
+        "--regular-font",
+        action="store_true",
+        help="Use regular weight font instead of bold."
+    )
+    parser.add_argument(
+        "--no-id",
+        action="store_true",
+        help="Disable adding unique verification ID at the bottom margin."
+    )
+    parser.add_argument(
+        "--id-prefix",
+        default="GSA-FMC-2026-",
+        help="Prefix for certificate ID. Default: 'GSA-FMC-2026-'"
+    )
+    parser.add_argument(
+        "--id-mode",
+        choices=["sequential", "hash"],
+        default="sequential",
+        help="Style of ID: 'sequential' (001) or 'hash' (8-character SHA256). Default: sequential"
     )
     parser.add_argument(
         "--text-format",
@@ -86,6 +108,9 @@ def main():
         bar = ("#" * int(pct // 4)).ljust(25, "-")
         print(f"\rGenerating: [{bar}] {current}/{total} ({pct:.0f}%)", end="", flush=True)
 
+    prefer_bold = False if args.regular_font else args.bold
+    enable_id = not args.no_id
+
     print(f"Generating certificates into '{args.output_dir}'...")
     results = generator.batch_generate(
         records=records,
@@ -93,8 +118,11 @@ def main():
         export_png=export_png,
         export_pdf=export_pdf,
         merged_pdf_name=args.merge_pdf,
+        enable_id=enable_id,
+        id_prefix=args.id_prefix,
+        id_mode=args.id_mode,
         font_size=args.font_size,
-        prefer_bold=args.bold,
+        prefer_bold=prefer_bold,
         custom_format=args.text_format,
         progress_callback=print_progress
     )
