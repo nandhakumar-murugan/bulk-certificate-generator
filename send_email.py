@@ -174,6 +174,8 @@ def main():
     parser.add_argument("--password", default=None, help="Google App Password (16 characters).")
     parser.add_argument("--attachment", nargs="*", default=None, help="Paths to attachments.")
     parser.add_argument("--bulk-file", default=None, help="CSV/Excel file for bulk email dispatch.")
+    parser.add_argument("--template", default=DEFAULT_TEMPLATE_PATH, help="Path to email HTML template.")
+    parser.add_argument("--subject", default=None, help="Custom email subject.")
     
     args = parser.parse_args()
 
@@ -194,19 +196,30 @@ def main():
         results = send_bulk_certificates(records, sender_email, password)
         print(f"Bulk Dispatch Finished! Sent: {results['sent']}, Failed: {results['failed']}")
     else:
-        attachments = args.attachment or [
+        attachments = args.attachment if args.attachment is not None else [
             "sample_mail_assets/Nandhakumar_M_Certificate.pdf",
             "sample_mail_assets/Nandhakumar_M_Certificate.png"
         ]
+        # Filter existing attachments
+        valid_attachments = [a for a in attachments if os.path.exists(a)]
+        
+        subject = args.subject or (
+            "⏳ Action Required: Submit Your Build Night Prototype to Claim Your Official Certificate & Qualify for ₹1 Crore Challenge!"
+            if "reminder" in args.template.lower() else
+            "🎉 Congratulations! Your Official Certificate of Participation is Here | Fund My Crazy Build Night with Gemini"
+        )
+
         send_certificate_email(
             sender_email=sender_email,
             sender_password=password,
             recipient_email=args.to,
             student_name=args.name,
+            template_path=args.template,
+            subject=subject,
             cert_id="GSA-FMC-2026-001",
             year="III Year",
             department="Computer Science & Cyber Security",
-            attachment_paths=attachments
+            attachment_paths=valid_attachments
         )
 
 if __name__ == "__main__":
