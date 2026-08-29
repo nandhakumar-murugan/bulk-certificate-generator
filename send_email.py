@@ -30,7 +30,7 @@ def send_certificate_email(
     cert_id: str = "",
     year: str = "",
     department: str = "",
-    form_url: str = "https://docs.google.com/spreadsheets/d/14BUb23tkmZ-sy8toYp_Ao1vJDHq0ViBgRRVU3GK_q4U/edit?gid=1433488250#gid=1433488250",
+    form_url: str = "https://forms.gle/xUfgYJPXwURdroyT7",
     smtp_server: str = "smtp.gmail.com",
     smtp_port: int = 465
 ) -> bool:
@@ -181,7 +181,7 @@ def main():
     parser.add_argument("--no-attachment", action="store_true", help="Send email without any attachments.")
     parser.add_argument("--template", default=DEFAULT_TEMPLATE_PATH, help="HTML email template file path.")
     parser.add_argument("--subject", default=None, help="Custom subject line for email.")
-    parser.add_argument("--form-url", default="https://docs.google.com/spreadsheets/d/14BUb23tkmZ-sy8toYp_Ao1vJDHq0ViBgRRVU3GK_q4U/edit?gid=1433488250#gid=1433488250", help="URL for submission form.")
+    parser.add_argument("--form-url", default="https://forms.gle/xUfgYJPXwURdroyT7", help="URL for submission form.")
     parser.add_argument("--bulk-file", default=None, help="CSV/Excel file for bulk email dispatch.")
     
     args = parser.parse_args()
