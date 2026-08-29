@@ -5,6 +5,7 @@ __pycache__/
 
 # Generated outputs
 generated_certificates/
+sample_mail_assets/
 test_output/
 *.zip
 

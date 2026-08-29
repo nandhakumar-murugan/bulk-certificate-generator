@@ -241,6 +241,59 @@ if records:
                     mime="application/pdf",
                     use_container_width=True
                 )
+
+# Email Dispatcher Section
+from send_email import send_certificate_email
+
+st.divider()
+st.subheader("📧 Certificate Email Dispatcher")
+with st.expander("✉️ Send Sample or Bulk Emails via Gmail", expanded=True):
+    st.markdown("""
+    Send the official Certificate of Participation email directly with the student's high-res PDF and PNG attached.
+    """)
+    m_col1, m_col2 = st.columns(2)
+    with m_col1:
+        s_email = st.text_input("Sender Gmail", value="smnk2006@gmail.com")
+        s_pass = st.text_input(
+            "Google App Password",
+            type="password",
+            help="Generate your 16-char Google App Password at: https://myaccount.google.com/apppasswords"
+        )
+    with m_col2:
+        r_email = st.text_input("Recipient Email", value="smnk2006@gmail.com")
+        r_name = st.text_input("Recipient Name", value="Nandhakumar M")
+
+    if st.button("🚀 Send Sample Email to " + r_email, type="primary"):
+        if not s_pass.strip():
+            st.error("⚠️ Please enter your 16-character Google App Password. (Generate at https://myaccount.google.com/apppasswords)")
+        else:
+            with st.spinner("Generating certificate and sending email..."):
+                try:
+                    # Generate certificate on the fly
+                    cert_img = generator.render_certificate(
+                        name=r_name,
+                        department="Computer Science & Cyber Security",
+                        year="III Year",
+                        cert_id="GSA-FMC-2026-001"
+                    )
+                    os.makedirs("sample_mail_assets", exist_ok=True)
+                    out_png = "sample_mail_assets/Nandhakumar_M_Certificate.png"
+                    out_pdf = "sample_mail_assets/Nandhakumar_M_Certificate.pdf"
+                    cert_img.save(out_png)
+                    generator.generate_single_pdf(cert_img, out_pdf)
+
+                    # Send email
+                    send_certificate_email(
+                        sender_email=s_email.strip(),
+                        sender_password=s_pass.strip(),
+                        recipient_email=r_email.strip(),
+                        student_name=r_name.strip(),
+                        attachment_paths=[out_pdf, out_png]
+                    )
+                    st.balloons()
+                    st.success(f"🎉 Certificate email successfully delivered to **{r_email}**!")
+                except Exception as ex:
+                    st.error(f"❌ Failed to send email: {ex}")
 else:
     st.info("👆 Please upload a CSV/Excel file, paste participants, or click 'Load Sample Dataset' to get started.")
 
