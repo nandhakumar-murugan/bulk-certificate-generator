@@ -30,11 +30,12 @@ def send_certificate_email(
     cert_id: str = "",
     year: str = "",
     department: str = "",
+    form_url: str = "https://docs.google.com/spreadsheets/d/14BUb23tkmZ-sy8toYp_Ao1vJDHq0ViBgRRVU3GK_q4U/edit?gid=1433488250#gid=1433488250",
     smtp_server: str = "smtp.gmail.com",
     smtp_port: int = 465
 ) -> bool:
     """
-    Sends an HTML email with attached certificate files using SMTP SSL and logs to registry.
+    Sends an HTML email with optional certificate files using SMTP SSL and logs to registry.
     """
     if not os.path.exists(template_path):
         raise FileNotFoundError(f"Email template not found: {template_path}")
@@ -45,6 +46,7 @@ def send_certificate_email(
     # Replace dynamic placeholders
     html_content = html_content.replace("{{STUDENT_NAME}}", student_name)
     html_content = html_content.replace("[Participant Name]", student_name)
+    html_content = html_content.replace("{{SUBMISSION_FORM_URL}}", form_url)
 
     msg = MIMEMultipart()
     msg["From"] = f"Google Student Ambassador Community <{sender_email}>"
@@ -54,15 +56,18 @@ def send_certificate_email(
     # Attach HTML body
     msg.attach(MIMEText(html_content, "html", "utf-8"))
 
-    # Attach certificate files
-    for file_path in attachment_paths:
-        path = Path(file_path)
-        if path.exists():
-            with open(path, "rb") as f:
-                part = MIMEApplication(f.read(), Name=path.name)
-            part["Content-Disposition"] = f'attachment; filename="{path.name}"'
-            msg.attach(part)
-            print(f"  -> Attached: {path.name}")
+    # Attach certificate files if provided
+    if attachment_paths:
+        for file_path in attachment_paths:
+            path = Path(file_path)
+            if path.exists():
+                with open(path, "rb") as f:
+                    part = MIMEApplication(f.read(), Name=path.name)
+                part["Content-Disposition"] = f'attachment; filename="{path.name}"'
+                msg.attach(part)
+                print(f"  -> Attached: {path.name}")
+            else:
+                print(f"  -> Warning: Attachment not found: {file_path}")
         else:
             print(f"  -> Warning: Attachment not found: {file_path}")
 
@@ -174,8 +179,6 @@ def main():
     parser.add_argument("--password", default=None, help="Google App Password (16 characters).")
     parser.add_argument("--attachment", nargs="*", default=None, help="Paths to attachments.")
     parser.add_argument("--bulk-file", default=None, help="CSV/Excel file for bulk email dispatch.")
-    parser.add_argument("--template", default=DEFAULT_TEMPLATE_PATH, help="Path to email HTML template.")
-    parser.add_argument("--subject", default=None, help="Custom email subject.")
     
     args = parser.parse_args()
 
@@ -196,30 +199,19 @@ def main():
         results = send_bulk_certificates(records, sender_email, password)
         print(f"Bulk Dispatch Finished! Sent: {results['sent']}, Failed: {results['failed']}")
     else:
-        attachments = args.attachment if args.attachment is not None else [
+        attachments = args.attachment or [
             "sample_mail_assets/Nandhakumar_M_Certificate.pdf",
             "sample_mail_assets/Nandhakumar_M_Certificate.png"
         ]
-        # Filter existing attachments
-        valid_attachments = [a for a in attachments if os.path.exists(a)]
-        
-        subject = args.subject or (
-            "⏳ Action Required: Submit Your Build Night Prototype to Claim Your Official Certificate & Qualify for ₹1 Crore Challenge!"
-            if "reminder" in args.template.lower() else
-            "🎉 Congratulations! Your Official Certificate of Participation is Here | Fund My Crazy Build Night with Gemini"
-        )
-
         send_certificate_email(
             sender_email=sender_email,
             sender_password=password,
             recipient_email=args.to,
             student_name=args.name,
-            template_path=args.template,
-            subject=subject,
             cert_id="GSA-FMC-2026-001",
             year="III Year",
             department="Computer Science & Cyber Security",
-            attachment_paths=valid_attachments
+            attachment_paths=attachments
         )
 
 if __name__ == "__main__":
