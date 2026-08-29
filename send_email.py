@@ -56,9 +56,9 @@ def send_certificate_email(
                 part = MIMEApplication(f.read(), Name=path.name)
             part["Content-Disposition"] = f'attachment; filename="{path.name}"'
             msg.attach(part)
-            print(f"  📎 Attached: {path.name}")
+            print(f"  -> Attached: {path.name}")
         else:
-            print(f"  ⚠️ Warning: Attachment not found: {file_path}")
+            print(f"  -> Warning: Attachment not found: {file_path}")
 
     # Send via SMTP SSL
     print(f"Connecting to {smtp_server}:{smtp_port}...")
@@ -66,7 +66,7 @@ def send_certificate_email(
         server.login(sender_email, sender_password)
         server.sendmail(sender_email, recipient_email, msg.as_string())
 
-    print(f"✅ Successfully sent email to {recipient_email}!")
+    print(f"Successfully sent email to {recipient_email}!")
     return True
 
 def main():
@@ -123,3 +123,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
