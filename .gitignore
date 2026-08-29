@@ -1,0 +1,17 @@
+__pycache__/
+*.py[cod]
+*$py.class
+*.log
+
+# Generated outputs
+generated_certificates/
+test_output/
+*.zip
+
+# Virtual environment & temporary files
+.venv/
+env/
+venv/
+ENV/
+.streamlit/
+clean_template.png
