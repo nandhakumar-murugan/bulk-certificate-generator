@@ -172,12 +172,16 @@ def send_bulk_certificates(
     return results
 
 def main():
-    parser = argparse.ArgumentParser(description="Send certificate distribution email.")
+    parser = argparse.ArgumentParser(description="Send certificate distribution or reminder email.")
     parser.add_argument("--to", default="smnk2006@gmail.com", help="Recipient email address.")
     parser.add_argument("--name", default="Nandhakumar M", help="Recipient student name.")
     parser.add_argument("--from-email", default="smnk2006@gmail.com", help="Sender Gmail address.")
     parser.add_argument("--password", default=None, help="Google App Password (16 characters).")
     parser.add_argument("--attachment", nargs="*", default=None, help="Paths to attachments.")
+    parser.add_argument("--no-attachment", action="store_true", help="Send email without any attachments.")
+    parser.add_argument("--template", default=DEFAULT_TEMPLATE_PATH, help="HTML email template file path.")
+    parser.add_argument("--subject", default=None, help="Custom subject line for email.")
+    parser.add_argument("--form-url", default="https://docs.google.com/spreadsheets/d/14BUb23tkmZ-sy8toYp_Ao1vJDHq0ViBgRRVU3GK_q4U/edit?gid=1433488250#gid=1433488250", help="URL for submission form.")
     parser.add_argument("--bulk-file", default=None, help="CSV/Excel file for bulk email dispatch.")
     
     args = parser.parse_args()
@@ -199,15 +203,28 @@ def main():
         results = send_bulk_certificates(records, sender_email, password)
         print(f"Bulk Dispatch Finished! Sent: {results['sent']}, Failed: {results['failed']}")
     else:
-        attachments = args.attachment or [
-            "sample_mail_assets/Nandhakumar_M_Certificate.pdf",
-            "sample_mail_assets/Nandhakumar_M_Certificate.png"
-        ]
+        if args.no_attachment:
+            attachments = []
+        else:
+            attachments = args.attachment if args.attachment is not None else [
+                "sample_mail_assets/Nandhakumar_M_Certificate.pdf",
+                "sample_mail_assets/Nandhakumar_M_Certificate.png"
+            ]
+
+        subj = args.subject or (
+            "⚠️ Action Required: Your Project Submission is Incomplete – Submit Now to Receive Your Certificate | Fund My Crazy Build Night"
+            if "reminder" in args.template.lower()
+            else "🎉 Congratulations! Your Official Certificate of Participation is Here | Fund My Crazy Build Night with Gemini"
+        )
+
         send_certificate_email(
             sender_email=sender_email,
             sender_password=password,
             recipient_email=args.to,
             student_name=args.name,
+            subject=subj,
+            template_path=args.template,
+            form_url=args.form_url,
             cert_id="GSA-FMC-2026-001",
             year="III Year",
             department="Computer Science & Cyber Security",
