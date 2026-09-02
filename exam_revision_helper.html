@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>KGiSL IA-1 Master Exam Revision Dashboard — Nandhakumar M</title>
+  <style>
+    :root {
+      --bg: #0b0f19;
+      --card-bg: #151d30;
+      --border: #23314d;
+      --accent-blue: #38bdf8;
+      --accent-green: #34d399;
+      --accent-yellow: #fbbf24;
+      --accent-red: #f87171;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      margin: 0;
+      padding: 24px;
+    }
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    .header {
+      background: linear-gradient(135deg, #1e293b, #0f172a);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px 30px;
+      margin-bottom: 24px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+    .badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 700;
+      margin-right: 8px;
+    }
+    .badge-cys { background: #6366f1; color: #fff; }
+    .badge-date { background: var(--accent-yellow); color: #000; }
+    .schedule-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .exam-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      border-top: 4px solid var(--accent-blue);
+    }
+    .exam-card.afternoon {
+      border-top-color: var(--accent-green);
+    }
+    .exam-title {
+      font-size: 18px;
+      font-weight: 700;
+      margin: 8px 0;
+    }
+    .tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .tab-btn {
+      background: #1e293b;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 15px;
+    }
+    .tab-btn.active {
+      background: var(--accent-blue);
+      color: #000;
+      border-color: var(--accent-blue);
+    }
+    .section-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 16px;
+    }
+    .qa-box {
+      border-bottom: 1px solid var(--border);
+      padding: 14px 0;
+    }
+    .qa-box:last-child { border-bottom: none; }
+    .q-text {
+      font-weight: 700;
+      color: var(--accent-blue);
+      font-size: 15px;
+      margin-bottom: 6px;
+    }
+    .a-text {
+      color: #cbd5e1;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+    .highlight-pill {
+      display: inline-block;
+      background: #1e293b;
+      color: var(--accent-yellow);
+      border: 1px solid #334155;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 12px 0;
+      font-size: 14px;
+    }
+    th, td {
+      border: 1px solid var(--border);
+      padding: 10px;
+      text-align: left;
+    }
+    th { background: #0f172a; color: var(--accent-blue); }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    <span class="badge badge-cys">B.E. CSE (CYBER SECURITY) • SEM V</span>
+    <span class="badge badge-date">TOMORROW • 31.08.2026</span>
+    <h1 style="margin: 12px 0 6px 0; color: #fff;">🎯 Internal Assessment I — Master Revision Dashboard</h1>
+    <p style="margin: 0; color: var(--text-muted);">KGiSL Institute of Technology • High-Yield Revision Kit</p>
+  </div>
+
+  <div class="schedule-grid">
+    <div class="exam-card">
+      <div style="font-size: 13px; color: var(--accent-blue); font-weight: 700;">SESSION 1 • MORNING (FN)</div>
+      <div class="exam-title">24UHV501 — Universal Human Values</div>
+      <div style="font-size: 14px; color: var(--text-muted);">⏰ 10:00 AM – 11:45 AM (1 hr 45 min)</div>
+      <p style="font-size: 13px; color: #cbd5e1; margin-top: 10px;">
+        Focus: Self-Exploration, Happiness vs Physical Facilities, Self &amp; Body Co-existence, Sanyam &amp; Swasthya, Trust in Family.
+      </p>
+    </div>
+    <div class="exam-card afternoon">
+      <div style="font-size: 13px; color: var(--accent-green); font-weight: 700;">SESSION 2 • AFTERNOON (AN)</div>
+      <div class="exam-title">24UCY511 — Secure Software Systems</div>
+      <div style="font-size: 14px; color: var(--text-muted);">⏰ 02:15 PM – 04:00 PM (1 hr 45 min)</div>
+      <p style="font-size: 13px; color: #cbd5e1; margin-top: 10px;">
+        Focus: OWASP Core (SQLi, XSS, CSRF, Buffer Overflow), Saltzer &amp; Schroeder Design Principles, STRIDE &amp; DREAD, NIST SSDF.
+      </p>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="showSubject('uhv')">📘 Universal Human Values (24UHV501)</button>
+    <button class="tab-btn" onclick="showSubject('sss')">🛡️ Secure Software Systems (24UCY511)</button>
+  </div>
+
+  <!-- SUBJECT 1: UHV -->
+  <div id="uhv-section">
+    <div class="section-card">
+      <h2 style="color: var(--accent-blue); margin-top: 0;">⚡ PART A (High-Yield 2-Marks)</h2>
+      
+      <div class="qa-box">
+        <div class="q-text">1. Define Value Education &amp; its Primary Objective.</div>
+        <div class="a-text">
+          <b>Value Education</b> is the process of discovering what is truly valuable for human beings and developing the competence to live accordingly.<br>
+          <b>Primary Objective:</b> To understand right values, fulfill the continuous aspirations of <i>Continuous Happiness and Prosperity</i>, and live in harmony at all four levels (Self, Family, Society, Nature).
+        </div>
+      </div>
+
+      <div class="qa-box">
+        <div class="q-text">2. Differentiate between Happiness (Sukh) and Physical Facility (Suvidha).</div>
+        <div class="a-text">
+          <table>
+            <tr><th>Parameter</th><th>Happiness (Need of the Self / 'I')</th><th>Physical Facility (Need of the Body)</th></tr>
+            <tr><td>Nature</td><td>Qualitative, Continuous, Psychological</td><td>Quantitative, Temporary, Physical/Chemical</td></tr>
+            <tr><td>Fulfillment</td><td>Right Understanding &amp; Right Relationship</td><td>Physical goods, food, shelter, technology</td></tr>
+            <tr><td>Example</td><td>Respect, trust, peace, gratitude</td><td>Clothes, house, smartphone, car</td></tr>
+          </table>
+        </div>
+      </div>
+
+      <div class="qa-box">
+        <div class="q-text">3. What is Sanyam (Self-Regulation) and Swasthya (Health)?</div>
+        <div class="a-text">
+          <b>Sanyam (Self-Regulation):</b> The feeling of responsibility in the Self ('I') for nurturing, protecting, and rightly utilizing the Body.<br>
+          <b>Swasthya (Health):</b> The state of the Body where all parts function in complete harmony and act as a reliable instrument of the Self.
+        </div>
+      </div>
+
+      <div class="qa-box">
+        <div class="q-text">4. Define Trust (Vishwas) in Human Relationships.</div>
+        <div class="a-text">
+          <b>Trust</b> is the assurance that the other human being genuinely intends my happiness and prosperity. It is the foundational value in all relationships.
+        </div>
+      </div>
+
+      <div class="qa-box">
+        <div class="q-text">5. Two Components of Self-Exploration.</div>
+        <div class="a-text">
+          1. <b>Content:</b> What is my natural desire / what is naturally acceptable to me?<br>
+          2. <b>Process:</b> Proposing a concept $\rightarrow$ verifying through Natural Acceptance $\rightarrow$ validating through living.
+        </div>
+      </div>
+    </div>
+
+    <div class="section-card">
+      <h2 style="color: var(--accent-blue); margin-top: 0;">🎯 PART B (13/16-Mark Core Big Questions)</h2>
+      <div class="qa-box">
+        <div class="q-text">Key Topic: Sanyam Lifestyle Programme for a College Student (Mobile Addiction Case)</div>
+        <div class="a-text">
+          • <b>Diagnosis:</b> The Self is chasing transient sensations (dopamine from scrolling) through the Body rather than true inner harmony.<br>
+          • <b>Programme:</b>
+          1. <i>Nurturing:</i> Fixed meal times with wholesome nutrition; water intake.<br>
+          2. <i>Protection:</i> Strict sleep schedule (11:00 PM - 6:00 AM); 30 minutes physical exercise/walking.<br>
+          3. <i>Right Utilization:</i> Treat the phone as an instrument for learning, coding, and meaningful contact—set strict app timers.
+        </div>
+      </div>
+      <div class="qa-box">
+        <div class="q-text">Key Topic: 9 Values in Relationships &amp; Trust (Vishwas)</div>
+        <div class="a-text">
+          Foundational value: <b>Trust</b>. Complete value: <b>Love (Prem)</b>.<br>
+          Crucial concept: Distinguish between <b>Intention</b> (what a person wants to do) and <b>Competence</b> (their ability to do it). Everyone intends happiness; mistakes happen due to lack of competence, not evil intention.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SUBJECT 2: SSS -->
+  <div id="sss-section" style="display: none;">
+    <div class="section-card">
+      <h2 style="color: var(--accent-green); margin-top: 0;">🧱 UNIT 1: OWASP Attacks &amp; Core Principles</h2>
+      
+      <div class="qa-box">
+        <div class="q-text">1. Saltzer and Schroeder's 4 Core Secure Design Principles:</div>
+        <div class="a-text">
+          • <b>Least Privilege:</b> Give only minimum necessary permissions.<br>
+          • <b>Fail-Safe Defaults:</b> Default to access denied; security is opt-out, not opt-in.<br>
+          • <b>Separation of Duties:</b> Require multiple identities/conditions for critical operations.<br>
+          • <b>Complete Mediation:</b> Verify permissions on every single access without caching.
+        </div>
+      </div>
+
+      <div class="qa-box">
+        <div class="q-text">2. Core Vulnerabilities &amp; Mitigations:</div>
+        <div class="a-text">
+          • <b>SQL Injection (SQLi):</b> Attacker alters database queries. Fix: <i>Parameterized queries / Prepared Statements</i>.<br>
+          • <b>XSS (Cross-Site Scripting):</b> Injects malicious JS into client browsers. Fix: <i>Context-aware output encoding &amp; CSP</i>.<br>
+          • <b>CSRF:</b> Tricks authenticated browser into submitting actions. Fix: <i>Anti-CSRF synchronizer tokens &amp; SameSite cookies</i>.<br>
+          • <b>Buffer Overflow:</b> Writes past memory bounds. Fix: <i>Bounds checking, safe functions (snprintf), ASLR, Stack Canaries</i>.
+        </div>
+      </div>
+
+      <div class="qa-box">
+        <div class="q-text">3. NIST SSDF (SP 800-218) 4 Practice Groups:</div>
+        <div class="a-text">
+          1. <b>PO (Prepare the Organization)</b> • 2. <b>PS (Protect the Software)</b> • 3. <b>PW (Produce Well-Secured Software)</b> • 4. <b>RV (Respond to Vulnerabilities)</b>.
+        </div>
+      </div>
+    </div>
+
+    <div class="section-card">
+      <h2 style="color: var(--accent-green); margin-top: 0;">🔍 UNIT 2 &amp; 3: Threat Modeling &amp; Architecture</h2>
+      <div class="qa-box">
+        <div class="q-text">1. STRIDE Threat Modeling Matrix:</div>
+        <div class="a-text">
+          <table>
+            <tr><th>Threat</th><th>Security Property Violated</th><th>Mitigation Technique</th></tr>
+            <tr><td><b>S</b>poofing</td><td>Authentication</td><td>MFA, Digital Signatures, PKI</td></tr>
+            <tr><td><b>T</b>ampering</td><td>Integrity</td><td>Hashes (SHA-256), HMAC, TLS</td></tr>
+            <tr><td><b>R</b>epudiation</td><td>Non-Repudiation</td><td>Audit trails, secure tamper-proof logging</td></tr>
+            <tr><td><b>I</b>nformation Disclosure</td><td>Confidentiality</td><td>Encryption (AES-256), Access controls</td></tr>
+            <tr><td><b>D</b>enial of Service</td><td>Availability</td><td>Rate limiting, load balancing, DDoS shields</td></tr>
+            <tr><td><b>E</b>levation of Privilege</td><td>Authorization</td><td>RBAC, Least privilege, input validation</td></tr>
+          </table>
+        </div>
+      </div>
+
+      <div class="qa-box">
+        <div class="q-text">2. DREAD Risk Rating Formula:</div>
+        <div class="a-text">
+          Rating $= (\text{Damage} + \text{Reproducibility} + \text{Exploitability} + \text{Affected Users} + \text{Discoverability}) / 5$.
+        </div>
+      </div>
+
+      <div class="qa-box">
+        <div class="q-text">3. Defense-in-Depth &amp; Trust Boundaries:</div>
+        <div class="a-text">
+          • <b>Defense-in-Depth:</b> Multi-layered security so if one layer fails, others stop the attacker.<br>
+          • <b>Trust Boundary:</b> The perimeter separating untrusted data from trusted code. All data crossing it MUST be validated!
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function showSubject(sub) {
+  const uhv = document.getElementById('uhv-section');
+  const sss = document.getElementById('sss-section');
+  const btns = document.querySelectorAll('.tab-btn');
+  if (sub === 'uhv') {
+    uhv.style.display = 'block';
+    sss.style.display = 'none';
+    btns[0].classList.add('active');
+    btns[1].classList.remove('active');
+  } else {
+    uhv.style.display = 'none';
+    sss.style.display = 'block';
+    btns[1].classList.add('active');
+    btns[0].classList.remove('active');
+  }
+}
+</script>
+
+</body>
+</html>

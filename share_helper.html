@@ -3,168 +3,108 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Share Certificate on LinkedIn — Fund My Crazy</title>
-  
-  <!-- Open Graph metadata so LinkedIn shows certificate card -->
-  <meta property="og:title" content="Certificate of Participation — Fund My Crazy: Build Night with Gemini" />
-  <meta property="og:description" content="Organized by Google Student Ambassador Community × School of Innovation (SOI) & Department of AI & DS, KGiSL Institute of Technology." />
-  <meta property="og:image" content="https://raw.githubusercontent.com/nandhakumar-murugan/bulk-certificate-generator/main/template_cleaned.png" />
-  <meta property="og:type" content="article" />
-
+  <title>LinkedIn Announcement - Nandhakumar Murugan</title>
   <style>
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      background-color: #f1f3f4;
-      color: #202124;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      margin: 0;
-      padding: 20px;
-      box-sizing: border-box;
+    :root {
+      --bg: #0f172a;
+      --card: #1e293b;
+      --primary: #3b82f6;
+      --accent: #10b981;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --border: #334155;
     }
-    .card {
-      background: #ffffff;
-      border: 1px solid #dadce0;
-      border-radius: 16px;
-      padding: 32px;
-      max-width: 540px;
-      width: 100%;
-      box-shadow: 0 4px 16px rgba(60,64,67,0.12);
-      text-align: center;
-    }
-    .badge {
-      display: inline-block;
-      padding: 4px 12px;
-      background-color: #e8f0fe;
-      color: #1a73e8;
-      border-radius: 20px;
-      font-size: 12px;
-      font-weight: 700;
-      margin-bottom: 12px;
-    }
-    h1 {
-      font-size: 20px;
-      margin: 0 0 12px 0;
-      color: #202124;
-    }
-    .status-box {
-      background-color: #e6f4ea;
-      border: 1px solid #ceead6;
-      border-radius: 8px;
-      padding: 16px;
-      margin: 20px 0;
-      color: #137333;
-      font-size: 15px;
-      font-weight: 600;
-      line-height: 1.5;
-    }
-    .caption-preview {
-      background-color: #f8f9fa;
-      border: 1px solid #e8eaed;
-      border-radius: 8px;
-      padding: 14px;
-      font-size: 12px;
-      color: #3c4043;
-      text-align: left;
-      line-height: 1.5;
-      font-family: monospace;
-      max-height: 160px;
-      overflow-y: auto;
-      margin-bottom: 20px;
-      user-select: all;
-    }
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      padding: 12px 24px;
-      background-color: #0a66c2;
-      color: #ffffff;
-      text-decoration: none;
-      font-size: 14px;
-      font-weight: 600;
-      border-radius: 8px;
-      border: none;
-      cursor: pointer;
-      width: 100%;
-      box-sizing: border-box;
-      transition: background-color 0.2s;
-    }
-    .btn:hover {
-      background-color: #084e96;
-    }
-    .tip {
-      font-size: 12px;
-      color: #70757a;
-      margin-top: 14px;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
+    body { background: var(--bg); color: var(--text); padding: 40px 20px; display: flex; justify-content: center; }
+    .container { max-width: 760px; width: 100%; }
+    .header { text-align: center; margin-bottom: 30px; }
+    .badge { display: inline-block; background: rgba(59, 130, 246, 0.15); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.3); padding: 6px 16px; border-radius: 9999px; font-size: 13px; font-weight: 600; margin-bottom: 12px; }
+    h1 { font-size: 28px; font-weight: 800; margin-bottom: 8px; background: linear-gradient(135deg, #60a5fa, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    p.subtitle { color: var(--text-muted); font-size: 15px; }
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 28px; margin-bottom: 24px; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3); }
+    .card-title { font-size: 18px; font-weight: 700; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; color: #38bdf8; }
+    textarea { width: 100%; height: 380px; background: #0b1120; border: 1px solid var(--border); border-radius: 12px; padding: 18px; color: #e2e8f0; font-size: 14px; line-height: 1.6; resize: vertical; margin-bottom: 20px; outline: none; }
+    textarea:focus { border-color: var(--primary); }
+    .button-row { display: flex; gap: 12px; flex-wrap: wrap; }
+    .btn { padding: 12px 24px; border-radius: 10px; font-weight: 600; font-size: 14px; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; border: none; transition: all 0.2s ease; }
+    .btn-primary { background: #2563eb; color: #ffffff; }
+    .btn-primary:hover { background: #1d4ed8; transform: translateY(-1px); }
+    .btn-success { background: #059669; color: #ffffff; }
+    .btn-success:hover { background: #047857; transform: translateY(-1px); }
+    .btn-secondary { background: #334155; color: #ffffff; }
+    .btn-secondary:hover { background: #475569; }
+    .toast { display: none; margin-top: 14px; padding: 10px 16px; background: rgba(16, 185, 129, 0.15); border: 1px solid var(--accent); color: #34d399; border-radius: 8px; font-size: 13px; font-weight: 500; text-align: center; }
   </style>
 </head>
 <body>
-
-  <div class="card">
-    <div class="badge">LinkedIn Post Assistant</div>
-    <h1>Sharing to LinkedIn</h1>
-
-    <div id="statusBox" class="status-box">
-      📋 Copying post caption to your clipboard...
+  <div class="container">
+    <div class="header">
+      <span class="badge">Google Student Ambassador Announcement</span>
+      <h1>LinkedIn Post Creator</h1>
+      <p class="subtitle">Announce your verified Google Individual CLA and Google Gemini Cookbook PR #1352</p>
     </div>
 
-    <div class="caption-preview" id="captionText">🚀 Excited to share that I participated in the "Fund My Crazy: Build Night with Gemini" challenge!
+    <div class="card">
+      <div class="card-title">🖼️ LinkedIn Post Media Banner</div>
+      <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 14px;">Attach this high-resolution visual banner to your LinkedIn post for maximum impressions & engagement:</p>
+      <div style="text-align: center; margin-bottom: 16px;">
+        <img src="linkedin_pr_announcement.jpg" style="width: 100%; border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 4px 15px rgba(0,0,0,0.4);" alt="LinkedIn PR Announcement Banner" />
+      </div>
+      <div style="display: flex; gap: 10px;">
+        <a href="linkedin_pr_announcement.jpg" download="Nandha_Google_Gemini_PR1352_Announcement.jpg" class="btn btn-primary">📥 Download Banner Image</a>
+      </div>
+    </div>
 
-Organized by the Google Student Ambassador Community in joint collaboration with the School of Innovation (SOI) and Department of AI & DS at KGiSL Institute of Technology, this hands-on build sprint was an incredible opportunity to prototype future smart city infrastructure solutions using Google Gemini and Nano Banana.
+    <div class="card">
+      <div class="card-title">📝 Optimized LinkedIn Post Content</div>
+      <textarea id="postContent">🚀 Thrilled to share a major open-source milestone in my journey as a Google Student Ambassador!
 
-💡 Project Theme: Smart City Infrastructure & Generative AI
-🛠️ Concept: Rapid multimodal prototyping using Gemini Advanced and Nano Banana
+I have officially signed and verified my Google Individual Contributor License Agreement (CLA) on file with Google Open Source, and submitted an upstream community recipe to Google’s flagship repository:
+👉 Google Gemini Cookbook — PR #1352
+https://github.com/google-gemini/cookbook/pull/1352
 
-A huge thank you to Nandhakumar M (Google Student Ambassador | #TeamGemini), Er. Sathish Ramanujam, and Dr. Senathipathi Kannusamy for organizing and mentoring this session!
+📖 The Project:
+"Indic Multimodal Document Intelligence & Security Guardrails with Gemini 2.0 Flash"
 
-#GoogleStudentAmbassador #TeamGemini #GoogleAI #GenerativeAI #Gemini #BuildNight #KGiSL #SchoolOfInnovation #AIandDS #TechInnovation</div>
+💡 The Problem:
+Across India and multilingual regions, developers, students, and engineers frequently encounter complex cloud architecture diagrams, system schematics, and workflows. However, conceptual breakdowns are rarely accessible in native Indic languages.
 
-    <button class="btn" id="actionBtn" onclick="manualCopyAndOpen()">
-      📋 Copy Caption & Open LinkedIn Now ↗
-    </button>
+🛠️ What this Recipe Demonstrates:
+1. 👁️ Visual Architecture Parsing using Gemini 2.0 Flash and the new official `google-genai` SDK.
+2. 🌐 Trilingual Knowledge Graphs providing conceptual breakdowns in English, Tamil (தமிழ்), and Hindi (हिन्दी).
+3. 🛡️ Enterprise Cybersecurity Guardrails enforcing strict deterministic Pydantic structured outputs (`response_schema`) to scan for architectural vulnerabilities, exposed secrets, and zero-trust compliance.
 
-    <div class="tip">
-      💡 <strong>Tip:</strong> Once LinkedIn opens, simply press <strong>Ctrl + V</strong> (or Paste) and attach your certificate image!
+✅ Automated Google CLA verification: PASSED (cla: yes)
+✅ Automated CI/CD checks: PASSED
+✅ Interactive 1-click Google Colab notebook included!
+
+A huge thank you to KGiSL Institute of Technology, Dr. Ashok Bakthavathsalam, and the Google Student Ambassador community for the continuous encouragement to build accessible AI for India.
+
+Check out the recipe here:
+🔗 Pull Request: https://github.com/google-gemini/cookbook/pull/1352
+🔗 Colab Notebook: https://github.com/nandhakumar-murugan/indic-multimodal-gemini-cookbook
+
+#GoogleGemini #GoogleStudentAmbassador #OpenSource #Gemini2 #AI #MachineLearning #IndicAI #CyberSecurity #KGiSL #GoogleCloud</textarea>
+
+      <div class="button-row">
+        <button class="btn btn-primary" onclick="copyPost()">📋 Copy Text to Clipboard</button>
+        <a href="https://www.linkedin.com/feed/?shareActive=true" target="_blank" class="btn btn-success">🚀 Open LinkedIn & Paste</a>
+        <a href="https://github.com/google-gemini/cookbook/pull/1352" target="_blank" class="btn btn-secondary">👀 View PR #1352</a>
+      </div>
+
+      <div id="copyToast" class="toast">✅ Post text copied to clipboard! Ready to paste into LinkedIn.</div>
     </div>
   </div>
 
   <script>
-    const caption = document.getElementById("captionText").innerText;
-
-    async function autoCopyAndRedirect() {
-      try {
-        await navigator.clipboard.writeText(caption);
-        document.getElementById("statusBox").innerHTML = "✅ <strong>Caption & Mentions Copied to Clipboard!</strong><br><span style='font-size:13px; font-weight: normal; color: #1e4620;'>Opening LinkedIn composer in 2 seconds... (Just press <b>Ctrl+V</b> to paste!)</span>";
-        setTimeout(() => {
-          window.location.href = "https://www.linkedin.com/feed/?shareActive=true";
-        }, 2000);
-      } catch (err) {
-        document.getElementById("statusBox").innerHTML = "👇 Click the button below to copy the caption and open LinkedIn:";
-        document.getElementById("statusBox").style.backgroundColor = "#feefe3";
-        document.getElementById("statusBox").style.color = "#b06000";
-        document.getElementById("statusBox").style.borderColor = "#fcdad0";
-      }
-    }
-
-    function manualCopyAndOpen() {
-      navigator.clipboard.writeText(caption).then(() => {
-        document.getElementById("actionBtn").innerText = "✅ Copied! Opening LinkedIn...";
-        window.open("https://www.linkedin.com/feed/?shareActive=true", "_blank");
+    function copyPost() {
+      const text = document.getElementById("postContent").value;
+      navigator.clipboard.writeText(text).then(() => {
+        const toast = document.getElementById("copyToast");
+        toast.style.display = "block";
+        setTimeout(() => { toast.style.display = "none"; }, 3000);
       });
     }
-
-    // Try automatic copy on page load
-    window.addEventListener("load", () => {
-      // Delay slightly for browser clipboard permissions
-      setTimeout(autoCopyAndRedirect, 500);
-    });
   </script>
-
 </body>
 </html>
-
