@@ -17,4 +17,6 @@ venv/
 ENV/
 .streamlit/
 clean_template.png
-
+test_*.png
+*_preview_*.png
+*.bak
